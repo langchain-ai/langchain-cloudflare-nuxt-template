@@ -1,0 +1,44 @@
+body {
+  --color-white: #FAFAFA;
+  --color-black: #111111;
+
+  --color-blue: #275DAD;
+
+  --color-background: #292626;
+
+  --box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--color-white);
+  background-color: var(--color-background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+#app {
+  overflow: hidden;
+}
+
+h1 {
+  font-size: 3em;
+  line-height: 1.1;
+}
