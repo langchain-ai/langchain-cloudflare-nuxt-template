@@ -1,0 +1,8 @@
+name = "langchain-worker"
+main = "src/worker.js"
+compatibility_date = "2023-05-24"
+compatibility_flags = [ "nodejs_compat" ]
+
+[[vectorize]]
+binding = "VECTORIZE_INDEX" # available within your Worker on env.VECTORIZE_INDEX
+index_name = "langchain_js_nuxt"

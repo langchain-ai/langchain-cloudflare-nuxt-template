@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "@mdi/font": "^7.3.67",
-    "langchain": "^0.0.181"
+    "langchain": "^0.0.189"
   }
 }

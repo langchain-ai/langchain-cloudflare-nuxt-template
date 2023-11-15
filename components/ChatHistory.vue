@@ -26,11 +26,11 @@ const appendToMessage = (chunk:string, index:number) => {
   scrollHistoryToBottom();
 };
 
-const getMessages = ():Message[] => {
+const getMessages = (): Message[] => {
   return messages.value;
 };
 
-const setMessages = (newMessages:Message[]) => {
+const setMessages = (newMessages: Message[]) => {
   messages.value = newMessages;
 }
 
