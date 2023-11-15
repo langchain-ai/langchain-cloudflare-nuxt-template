@@ -3,13 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "NITRO_PRESET=cloudflare-pages nuxt build",
+    "build": "NITRO_PRESET=cloudflare-module nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "pages:dev": "wrangler pages dev --compatibility-date=2023-10-30 --proxy 3000 & npm run dev",
-    "pages:deploy": "npm run build && wrangler pages deploy ./dist"
+    "postinstall": "nuxt prepare"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

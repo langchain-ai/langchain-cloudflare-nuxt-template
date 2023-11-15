@@ -133,7 +133,7 @@ const askPhilosopher = async (e:Event) => {
       content: userQuestion.value || questionPlaceholder.value
     });
     userQuestion.value = '';
-    const questionResponse = await fetch(`http://localhost:8788/chat/`, {
+    const questionResponse = await fetch(`/api/chat`, {
       method: 'POST',
       body: JSON.stringify({
         person: selectedPhilosopher.value,

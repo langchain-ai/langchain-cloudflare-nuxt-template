@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
 
   const openAIModel = new ChatOpenAI({
     modelName: "gpt-3.5-turbo",
+    openAIApiKey: process.env.OPENAI_API_KEY,
   });
 
   const extractionPrompt = ChatPromptTemplate.fromMessages([
@@ -28,7 +29,7 @@ export default defineEventHandler(async (event) => {
     new MessagesPlaceholder('history'),
     ["human", "What domain of knowledge would be most helpful in answering the following question? Try to keep answers to one word:\n{input}"],
   ]);
-  
+
   const answerPrompt = ChatPromptTemplate.fromMessages([
     ["system", `You are an expert in {topic}. Be concise, kind, and helpful.
 Format your answers to be readable in a chat interface, and logically split your answer into paragraphs for readability.`
@@ -42,8 +43,8 @@ Format your answers to be readable in a chat interface, and logically split your
   });
 
   const chain = RunnableSequence.from([
-    RunnablePassthrough.assign({ 
-      topic: extractionPrompt.pipe(openAIModel).pipe(new StringOutputParser()) 
+    RunnablePassthrough.assign({
+      topic: extractionPrompt.pipe(openAIModel).pipe(new StringOutputParser())
     }),
     answerPrompt,
     cloudflareModel,

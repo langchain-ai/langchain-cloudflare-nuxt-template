@@ -7,6 +7,13 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify'],
   },
+  nitro: {
+    // Useful for debugging
+    minify: false,
+    commands: {
+      preview: 'npx wrangler dev ./server/index.mjs --site ./public --remote --port 3000'
+    }
+  },
   css: ["~/assets/css/style.css"],
   modules: [
     (_options, nuxt) => {

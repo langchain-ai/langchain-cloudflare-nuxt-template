@@ -4,22 +4,28 @@ Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introdu
 
 ## Setup
 
+1. Install dependencies:
+
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Vectorize
+2. Create vectorize
 
-Run `npx wrangler vectorize create langchain_js_nuxt --dimensions 768 --metric cosine`
+```bash
+npx wrangler vectorize create langchain_js_nuxt --dimensions 768 --metric cosine
+```
 
-Start with `npm run pages:dev`.
+3. Copy `.dev.vars.example` to `.dev.vars` and fill in the tokens
+
+4. Build project
+
+```bash
+npm run build
+```
+
+5. Start in preview mode
+
+```bash
+npm run preview
+```

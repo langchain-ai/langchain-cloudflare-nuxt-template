@@ -1,6 +1,6 @@
 name = "langchain-worker"
-main = "src/worker.js"
-compatibility_date = "2023-05-24"
+main = "./.output/server/index.mjs"
+compatibility_date = "2023-11-15"
 compatibility_flags = [ "nodejs_compat" ]
 
 [[vectorize]]
