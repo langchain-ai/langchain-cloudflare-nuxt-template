@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   },
   nitro: {
     // Useful for debugging
-    minify: false,
+    // minify: false,
     commands: {
       preview:
         "npx wrangler dev ./server/index.mjs --site ./public --remote --port 3000",

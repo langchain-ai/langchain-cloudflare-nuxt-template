@@ -1,10 +1,5 @@
 import { HumanMessage, AIMessage } from "langchain/schema";
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import { HttpResponseOutputParser } from "langchain/output_parsers";
-import {
-  RunnableSequence,
-  RunnablePassthrough,
-} from "langchain/schema/runnable";
 
 import { ChatCloudflareWorkersAI } from "langchain/chat_models/cloudflare_workersai";
 import { CloudflareVectorizeStore } from "langchain/vectorstores/cloudflare_vectorize";
@@ -14,12 +9,15 @@ import { createConversationalRetrievalChain } from "~/utils/conversational_retri
 const formatChatHistory = (
   chatHistory: { type: "ai" | "human"; content: string }[],
 ) => {
-  const formattedDialogueTurns = chatHistory.map((message) => {
-    const formattedRole = message.type === "ai" ? "Assistant" : "Human";
-    return `${formattedRole}: ${message.content}`;
+  const messages = chatHistory.map((message) => {
+    if (message.type === "ai") {
+      return new AIMessage({ content: message.content });
+    } else {
+      return new HumanMessage({ content: message.content });
+    }
   });
 
-  return formattedDialogueTurns.join("\n");
+  return messages;
 };
 
 export default defineEventHandler(async (event) => {

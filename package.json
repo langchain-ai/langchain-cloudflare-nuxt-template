@@ -2,12 +2,13 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "packageManager": "yarn@3.4.1",
   "scripts": {
     "build": "NITRO_PRESET=cloudflare-module nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "reload": "npm run build && npm run preview",
+    "reload": "yarn run build && yarn run preview",
     "format": "prettier . --write"
   },
   "devDependencies": {
@@ -26,7 +27,7 @@
     "@mdi/font": "^7.3.67",
     "@microsoft/fetch-event-source": "^2.0.1",
     "cheerio": "^1.0.0-rc.12",
-    "langchain": "file:../langchainjs/langchain",
+    "langchain": "^0.0.191",
     "pdf-parse": "^1.1.1"
   }
 }

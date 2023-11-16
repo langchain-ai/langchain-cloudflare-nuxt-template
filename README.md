@@ -7,7 +7,7 @@ Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introdu
 1. Install dependencies:
 
 ```bash
-$ npm install
+$ yarn
 ```
 
 2. Create vectorize
@@ -23,11 +23,17 @@ See the [Wrangler CLI reference docs](https://developers.cloudflare.com/workers/
 4. Build project
 
 ```bash
-$ npm run build
+$ yarn run build
 ```
 
 5. Start in preview mode
 
 ```bash
-$ npm run preview
+$ yarn run preview
+```
+
+You can combine the previous two steps with:
+
+```bash
+$ yarn run reload
 ```
