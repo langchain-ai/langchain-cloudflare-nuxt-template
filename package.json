@@ -2,14 +2,13 @@
   "name": "langchain-nuxt-cloudflare-template",
   "private": true,
   "type": "module",
-  "packageManager": "yarn@3.4.1",
   "scripts": {
     "build": "NITRO_PRESET=cloudflare-module nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "reload": "yarn run build && yarn run preview",
-    "deploy": "yarn run build && yarn run wrangler deploy .output/server/index.mjs --site .output/public",
+    "reload": "npm run build && npm run preview",
+    "deploy": "npm run build && npx wrangler deploy .output/server/index.mjs --site .output/public",
     "format": "prettier . --write"
   },
   "devDependencies": {

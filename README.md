@@ -25,7 +25,7 @@ The bot will classify incoming questions as being about Cloudflare, AI, or neith
 1. Install dependencies:
 
 ```bash
-$ yarn
+$ npm
 ```
 
 2. Create Vectorize DBs
@@ -46,19 +46,19 @@ See the [Wrangler CLI reference docs](https://developers.cloudflare.com/workers/
 4. Build project
 
 ```bash
-$ yarn run build
+$ npm run build
 ```
 
 5. Start in preview mode
 
 ```bash
-$ yarn run preview
+$ npm run preview
 ```
 
 You can combine the previous two steps to reflect changes while developing (Nuxt hot reload coming soon!):
 
 ```bash
-$ yarn run reload
+$ npm run reload
 ```
 
 6. Ping `http://localhost:3000/api/ingest` to populate the Vectorize DBs you set up earlier.

@@ -101,7 +101,14 @@ const submitQuery = async (e: Event) => {
       </div>
     </v-form>
     <footer>
-      <a href="https://jacobscript.dev" target="_blank">© Jacob Lee, 2023</a>
+      <a
+        href="https://github.com/langchain-ai/langchain-nuxt-cloudflare-template/"
+        class="link-row"
+        target="_blank"
+      >
+        <img src="/public/github-mark.svg" class="github-wordmark" />
+        <span>View Source</span>
+      </a>
     </footer>
   </div>
 </template>
@@ -115,6 +122,14 @@ const submitQuery = async (e: Event) => {
 }
 .ask.chat-mode {
   transform: translate3d(0, 0, 0);
+}
+.link-row {
+  display: flex;
+  align-items: center;
+}
+.github-wordmark {
+  height: 16px;
+  margin-right: 4px;
 }
 .chat-history {
   visibility: hidden;

@@ -1,8 +1,4 @@
 <script setup lang="ts">
-const props = defineProps<{
-  initialMessages?: Message[];
-}>();
-
 const messages = ref<Message[]>([]);
 const chatMessages = ref<HTMLElement | null>(null);
 
