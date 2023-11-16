@@ -2,7 +2,7 @@ import type { VectorStore } from "langchain/vectorstores/base";
 import type { BaseLanguageModel } from "langchain/base_language";
 
 import { ChatPromptTemplate } from "langchain/prompts";
-import { RunnableSequence, RunnablePassthrough, RunnableBranch } from "langchain/schema/runnable";
+import { RunnableSequence, RunnableBranch } from "langchain/schema/runnable";
 import { StringOutputParser } from "langchain/schema/output_parser";
 import { formatDocumentsAsString } from "langchain/util/document";
 
@@ -15,7 +15,7 @@ Chat History:
 Follow Up Input: {question}
 Standalone Question:`;
 const condenseQuestionPrompt = ChatPromptTemplate.fromTemplate(
-  CONDENSE_QUESTION_TEMPLATE
+  CONDENSE_QUESTION_TEMPLATE,
 );
 
 const ANSWER_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources. Using the provided context, answer the user's question to the best of your ability using the resources provided.
@@ -39,45 +39,91 @@ Now, answer this question: {standalone_question}`;
 
 const answerPrompt = ChatPromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
-const formatChatHistory = (chatHistory: {type: "ai" | "human", content: string}[]) => {
-  const formattedDialogueTurns = chatHistory.map((message) => {
-    const formattedRole = message.type === "ai" ? "Assistant" : "Human";
-    return `${formattedRole}: ${message.content}`;
-  });
-  
-  return formattedDialogueTurns.join("\n");
-};
+const ROUTER_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
+You have access to two databases: one with information about Cloudflare, and another about artificial intelligence. 
+Your job is to pick the database that would be more useful to answer the following question:
 
-export function createConversationalRetrievalChain({model, vectorstore}: { model: BaseLanguageModel, vectorstore: VectorStore}) {
-  const retriever = vectorstore.asRetriever();
+<question>
+  {standalone_question}
+</question>
+
+You must respond with one of the following answers: "Cloudflare", "Artificial Intelligence", or "Neither". Do not include anything else in your response.
+
+Response:`;
+
+const routerPrompt = ChatPromptTemplate.fromTemplate(ROUTER_TEMPLATE);
+
+export function createConversationalRetrievalChain({
+  model,
+  cloudflareKnowledgeVectorstore,
+  aiKnowledgeVectorstore,
+}: {
+  model: BaseLanguageModel;
+  cloudflareKnowledgeVectorstore: VectorStore;
+  aiKnowledgeVectorstore: VectorStore;
+}) {
+  const cloudflareKnowledgeRetriever = cloudflareKnowledgeVectorstore
+    .asRetriever()
+    .withConfig({ runName: "CloudflareKnowledgeRetriever" });
+  const aiKnowledgeRetriever = aiKnowledgeVectorstore
+    .asRetriever()
+    .withConfig({ runName: "AIKnowledgeRetriever" });
 
   const standaloneQuestionChain = RunnableSequence.from([
     {
       question: (input) => input.question,
-      chat_history: (input) =>
-        formatChatHistory(input.chat_history),
+      chat_history: (input) => input.chat_history,
     },
     condenseQuestionPrompt,
     model,
     new StringOutputParser(),
-  ]);
-  
+  ]).withConfig({ runName: "RephraseQuestionChain" });
+
+  const routingChain = RunnableSequence.from([
+    routerPrompt,
+    model,
+    new StringOutputParser(),
+  ]).withConfig({ runName: "RoutingChain" });
+
   const retrievalChain = RunnableSequence.from([
-    (input) => input.standalone_question,
-    retriever,
+    {
+      standalone_question: (input) => input.standalone_question,
+      knowledge_base_name: routingChain,
+    },
+    // Default to the AI retriever if the model does not think Cloudflare would be helpful.
+    // You could change this to a general search retriever instead.
+    RunnableBranch.from([
+      [
+        (output) =>
+          output.knowledge_base_name.toLowerCase().includes("cloudflare"),
+        RunnableSequence.from([
+          (output) => output.standalone_question,
+          cloudflareKnowledgeRetriever,
+        ]),
+      ],
+      RunnableSequence.from([
+        (output) => output.standalone_question,
+        aiKnowledgeRetriever,
+      ]),
+    ]),
     formatDocumentsAsString,
-  ]);
-  
+  ]).withConfig({ runName: "RetrievalChain" });
+
   const answerChain = RunnableSequence.from([
-    RunnablePassthrough.assign({
+    {
+      standalone_question: (input) => input.standalone_question,
+      chat_history: (input) => input.chat_history,
       context: retrievalChain,
-    }),
+    },
     answerPrompt,
     model,
-  ]);
-  
+  ]).withConfig({ runName: "AnswerGenerationChain" });
+
   return RunnableSequence.from([
-    { standalone_question: standaloneQuestionChain, chat_history: (input) => input.chat_history },
-    answerChain
-  ]);
+    {
+      standalone_question: standaloneQuestionChain,
+      chat_history: (input) => input.chat_history,
+    },
+    answerChain,
+  ]).withConfig({ runName: "ConversationalRetrievalChain" });
 }

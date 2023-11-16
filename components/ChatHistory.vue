@@ -8,7 +8,7 @@ const chatMessages = ref<HTMLElement | null>(null);
 
 const scrollHistoryToBottom = () => {
   if (chatMessages.value) {
-    chatMessages.value.scrollTop = chatMessages.value.scrollHeight
+    chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
   }
 };
 
@@ -18,11 +18,11 @@ const addNewMessage = (message: Message) => {
   return messages.value.length - 1;
 };
 
-const appendToMessage = (chunk:string, index:number) => {
+const appendToMessage = (chunk: string, index: number) => {
   if (!messages.value.length) {
     return;
   }
-  messages.value[index].content = (messages.value[index].content + chunk);
+  messages.value[index].content = messages.value[index].content + chunk;
   scrollHistoryToBottom();
 };
 
@@ -32,7 +32,7 @@ const getMessages = (): Message[] => {
 
 const setMessages = (newMessages: Message[]) => {
   messages.value = newMessages;
-}
+};
 
 const clearMessages = () => {
   messages.value = [];
@@ -43,9 +43,8 @@ defineExpose({
   appendToMessage,
   getMessages,
   setMessages,
-  clearMessages
+  clearMessages,
 });
-
 </script>
 
 <template>

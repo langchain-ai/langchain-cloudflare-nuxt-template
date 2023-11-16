@@ -6,12 +6,15 @@
     "build": "NITRO_PRESET=cloudflare-module nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "reload": "npm run build && npm run preview",
+    "format": "prettier . --write"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231025.0",
     "@nuxt/devtools": "latest",
     "nuxt": "^3.8.0",
+    "prettier": "3.1.0",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.7",
     "vue-router": "^4.2.5",
@@ -23,6 +26,7 @@
     "@mdi/font": "^7.3.67",
     "@microsoft/fetch-event-source": "^2.0.1",
     "cheerio": "^1.0.0-rc.12",
-    "langchain": "^0.0.189"
+    "langchain": "file:../langchainjs/langchain",
+    "pdf-parse": "^1.1.1"
   }
 }

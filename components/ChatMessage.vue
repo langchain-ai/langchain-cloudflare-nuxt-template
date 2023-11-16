@@ -1,6 +1,6 @@
 <script lang="ts">
 export interface Message {
-  type: 'human' | 'ai';
+  type: "human" | "ai";
   content: string;
 }
 </script>

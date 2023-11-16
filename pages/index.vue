@@ -1,159 +1,89 @@
 <script setup lang="ts">
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-const options = [
-  'Adam Smith',
-  'Albert Camus',
-  'Albert Einstein',
-  'Alfred, Lord Tennyson',
-  'Aristotle',
-  'Attar of Nishapur',
-  'Avicenna',
-  'Bertrand Russell',
-  'Blaise Pascal',
-  'C.S. Lewis',
-  'Catullus',
-  'Cicero',
-  'Confucius',
-  'Dante Aligheri',
-  'Dara Shikoh',
-  'David Hume',
-  'E.E. Cummings',
-  'Edgar Allen Poe',
-  'Emily Dickinson',
-  'Emma Goldman',
-  'Epicurus',
-  'Friedrich Nietzsche',
-  'Gottfried Leibniz',
-  'Hannah Arendt',
-  'Henry David Thoreau',
-  'Hesiod',
-  'Homer',
-  'Horace',
-  'Immanuel Kant',
-  'Jean-Jacques Rousseau',
-  'Jean-Paul Sarte',
-  'John Calvin',
-  'John Dewey',
-  'John Keats',
-  'John Locke',
-  'John Milton',
-  'John Stuart Mill',
-  'Julius Caesar',
-  'Karl Marx',
-  'Langston Hughes',
-  'Leo Tolstoy',
-  'Lewis Carroll',
-  'Li Bai',
-  'Machiavelli',
-  'Marcus Aurelius',
-  'Mark Twain',
-  'Mary Wollstonecraft',
-  'Maya Angelou',
-  'Michel Foucault',
-  'Mozi',
-  'Oscar Wilde',
-  'Ovid',
-  'Pablo Neruda',
-  'Percy Bysshe Shelley',
-  'Plato',
-  'Ralph Waldo Emerson',
-  'René Descartes',
-  'Robert Frost',
-  'Rumi',
-  'Saint Augustine of Hippo',
-  'Sappho',
-  'Simone de Beauvoir',
-  'Socrates',
-  'Soren Kierkegaard',
-  'Thomas Aquinas',
-  'Thomas Hobbes',
-  'Thomas Paine',
-  'Virgil',
-  'Voltaire',
-  'Walt Whitman',
-  'William Shakespeare'
-];
 
 const placeholders = [
   'What do you think of the lyrics of the song "Friday" by Rebecca Black?',
   'What do you think of the lyrics of the song "DNA." by Kendrick Lamar?',
   'What do you think of the lyrics of the song "Hey Ya" by Outkast?',
-  'What are some things you\'d consider when buying a new car?',
-  'Who was your best friend?',
-  'What advice do you have for pursuing a career as a software engineer?',
-  'What is your favorite food?',
-  'If you were an animal, what would you be and why?',
-  'How do you feel about ChatGPT?',
-  'What techniques do you recommend learning to become a better Super Smash Bros. player?',
-  'Would you have enjoyed surfing?',
-  'How would you fight a bear?',
-  'What was the hardest decision you ever had to make?',
-  'What Hogwarts house would you have been sorted into?',
-  'Who had the biggest influence on your life?',
+  "What are some things you'd consider when buying a new car?",
+  "Who was your best friend?",
+  "What advice do you have for pursuing a career as a software engineer?",
+  "What is your favorite food?",
+  "If you were an animal, what would you be and why?",
+  "How do you feel about ChatGPT?",
+  "What techniques do you recommend learning to become a better Super Smash Bros. player?",
+  "Would you have enjoyed surfing?",
+  "How would you fight a bear?",
+  "What was the hardest decision you ever had to make?",
+  "What Hogwarts house would you have been sorted into?",
+  "Who had the biggest influence on your life?",
   'What do you thnk of the lyrics of the song "All Star" by Smash Mouth?',
-  'What is your opinion on tattoos of Latin mottos?',
-  'What was your proudest moment?',
-  'Why do you park on a driveway and drive on a parkway?',
-  'Sell me this pen.',
-  'How long would you survive in a zombie apocalypse?',
-  'What would you do if you won a million dollars?',
-  'If you could choose one superpower, what would it be and why?'
+  "What is your opinion on tattoos of Latin mottos?",
+  "What was your proudest moment?",
+  "Why do you park on a driveway and drive on a parkway?",
+  "Sell me this pen.",
+  "How long would you survive in a zombie apocalypse?",
+  "What would you do if you won a million dollars?",
+  "If you could choose one superpower, what would it be and why?",
 ];
 
 const chatContainer = ref<HTMLElement | null>(null);
 const askForm = ref<HTMLElement | null>(null);
-const selectedPhilosopher = ref(options[Math.floor(0 * options.length)]);
-const questionPlaceholder = ref(placeholders[Math.floor(0 * placeholders.length)]);
+const questionPlaceholder = ref(
+  placeholders[Math.floor(0 * placeholders.length)],
+);
 const userQuestionField = ref<HTMLElement | null>(null);
 const chatHistory = ref<typeof ChatHistory | null>(null);
-const userQuestion = ref('');
+const userQuestion = ref("");
 const isLoading = ref(false);
 
 const enterChatMode = async () => {
   window.requestAnimationFrame(() => {
-    askForm.value?.classList.add('chat-mode');
+    askForm.value?.classList.add("chat-mode");
   });
   await new Promise((resolve) => {
     setTimeout(resolve, 300);
   });
   window.requestAnimationFrame(() => {
-    chatContainer.value?.classList.add('has-messages');
+    chatContainer.value?.classList.add("has-messages");
   });
-  questionPlaceholder.value = 'Ask a follow-up!';
-}
+  questionPlaceholder.value = "Ask a follow-up!";
+};
 
-const askPhilosopher = async (e:Event) => {
+const submitQuery = async (e: Event) => {
   e.preventDefault();
-  if (!chatContainer.value || (chatHistory.value?.getMessages().length > 0 && !userQuestion.value)) {
+  if (
+    !chatContainer.value ||
+    (chatHistory.value?.getMessages().length > 0 && !userQuestion.value)
+  ) {
     return;
   }
   isLoading.value = true;
   try {
     chatHistory.value?.addNewMessage({
-      type: 'human',
-      content: userQuestion.value || questionPlaceholder.value
+      type: "human",
+      content: userQuestion.value || questionPlaceholder.value,
     });
-    userQuestion.value = '';
-    if (!chatContainer.value.classList.contains('has-messages')) {
+    userQuestion.value = "";
+    if (!chatContainer.value.classList.contains("has-messages")) {
       await enterChatMode();
     }
     let aiMessageIndex: number;
     await fetchEventSource(`/api/chat`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
-        person: selectedPhilosopher.value,
         messages: chatHistory.value?.getMessages(),
       }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       openWhenHidden: true,
       onopen: async (response: any) => {
         aiMessageIndex = chatHistory.value?.addNewMessage({
-          type: 'ai',
-          content: ''
+          type: "ai",
+          content: "",
         });
-        if (!chatContainer.value?.classList.contains('has-messages')) {
+        if (!chatContainer.value?.classList.contains("has-messages")) {
           await enterChatMode();
         }
       },
@@ -165,9 +95,12 @@ const askPhilosopher = async (e:Event) => {
         if (msg.event === "end") {
           isLoading.value = false;
         } else if (msg.event === "data" && msg.data) {
-          chatHistory.value?.appendToMessage(msg.data, aiMessageIndex);
+          chatHistory.value?.appendToMessage(
+            JSON.parse(msg.data),
+            aiMessageIndex,
+          );
         }
-      }
+      },
     });
   } catch (e) {
     isLoading.value = false;
@@ -175,40 +108,17 @@ const askPhilosopher = async (e:Event) => {
   }
 };
 
-const onPhilosopherSwitch = () => {
-  chatHistory.value?.clearMessages();
-  window.history.pushState({}, document.title, '/');
-  questionPlaceholder.value = placeholders[Math.floor(0 * placeholders.length)];
-};
-
 const setRandomQuestion = () => {
   userQuestion.value = placeholders[Math.floor(0 * placeholders.length)];
 };
-
-const getCurrentChatHistoryMessages = (): Message[] => {
-  return chatHistory.value?.getMessages() || [];
-}
-
 </script>
 
 <template>
   <div ref="chatContainer" class="chat">
     <ChatHistory class="chat-history" ref="chatHistory"></ChatHistory>
-    <v-form ref="askForm" class="ask" @submit="askPhilosopher">
+    <v-form ref="askForm" class="ask" @submit="submitQuery">
       <div class="row">
-        <h1>
-          Ask
-        </h1>
-        <!-- <v-autocomplete
-          autocomplete="off"
-          class="philosophers"
-          name="philosophers"
-          :items="options"
-          variant="underlined"
-          v-model="selectedPhilosopher"
-          @update:model-value="onPhilosopherSwitch"
-          :disabled="isLoading"
-          ></v-autocomplete> -->
+        <h1>Ask</h1>
         <v-text-field
           ref="userQuestionField"
           v-model="userQuestion"
@@ -216,16 +126,24 @@ const getCurrentChatHistoryMessages = (): Message[] => {
           class="question"
           variant="underlined"
           append-inner-icon="mdi-send"
-          @keydown.enter="askPhilosopher"
-          @click:append-inner="askPhilosopher"
+          @keydown.enter="submitQuery"
+          @click:append-inner="submitQuery"
           :disabled="isLoading"
-          ></v-text-field>
+        ></v-text-field>
         <div class="extra-buttons-container">
-          <v-btn class="random-button" icon="mdi-shuffle-variant" variant="plain" @mouseup="setRandomQuestion" :disabled="isLoading"></v-btn>
+          <v-btn
+            class="random-button"
+            icon="mdi-shuffle-variant"
+            variant="plain"
+            @mouseup="setRandomQuestion"
+            :disabled="isLoading"
+          ></v-btn>
         </div>
       </div>
     </v-form>
-    <footer><a href="https://jacobscript.dev" target="_blank">© Jacob Lee, 2023</a></footer>
+    <footer>
+      <a href="https://jacobscript.dev" target="_blank">© Jacob Lee, 2023</a>
+    </footer>
   </div>
 </template>
 
@@ -255,7 +173,6 @@ const getCurrentChatHistoryMessages = (): Message[] => {
   max-width: 1280px;
   padding: 24px 48px;
   margin: 0 auto;
-
 }
 .row {
   display: flex;
@@ -271,12 +188,9 @@ const getCurrentChatHistoryMessages = (): Message[] => {
   right: 12px;
   bottom: 16px;
 }
-h1, .philosophers, .question {
+h1,
+.question {
   margin-right: 16px;
-}
-.philosophers {
-  min-width: 240px;
-  flex-grow: 0;
 }
 .question {
   flex-grow: 1;
@@ -289,7 +203,6 @@ h1, .philosophers, .question {
 input.question {
   width: 100%;
 }
-
 
 @media (max-width: 960px) {
   .chat {
