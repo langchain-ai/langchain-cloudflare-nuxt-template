@@ -79,7 +79,6 @@ const submitQuery = async (e: Event) => {
     throw e;
   }
 };
-
 </script>
 
 <template>

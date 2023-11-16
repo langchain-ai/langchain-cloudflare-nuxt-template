@@ -13,7 +13,6 @@ export default defineNuxtConfig({
     commands: {
       preview:
         "yarn run wrangler dev ./server/index.mjs --site ./public --remote --port 3000",
-      deploy: "yarn run wrangler deploy ./server/index.mjs --site ./public"
     },
   },
   css: ["~/assets/css/style.css"],
