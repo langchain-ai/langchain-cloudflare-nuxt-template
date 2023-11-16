@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "langchain-nuxt-cloudflare-template",
   "private": true,
   "type": "module",
   "packageManager": "yarn@3.4.1",
@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "reload": "yarn run build && yarn run preview",
-    "deploy": "yarn run build && yarn run wrangler deploy",
+    "deploy": "yarn run build && yarn run wrangler deploy .output/server/index.mjs --site .output/public",
     "format": "prettier . --write"
   },
   "devDependencies": {

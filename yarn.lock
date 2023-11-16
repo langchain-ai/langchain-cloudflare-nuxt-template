@@ -4968,6 +4968,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"langchain-nuxt-cloudflare-template@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "langchain-nuxt-cloudflare-template@workspace:."
+  dependencies:
+    "@cloudflare/ai": ^1.0.28
+    "@cloudflare/workers-types": ^4.20231025.0
+    "@mdi/font": ^7.3.67
+    "@microsoft/fetch-event-source": ^2.0.1
+    "@nuxt/devtools": latest
+    cheerio: ^1.0.0-rc.12
+    langchain: ^0.0.191
+    nuxt: ^3.8.0
+    pdf-parse: ^1.1.1
+    prettier: 3.1.0
+    vite-plugin-vuetify: ^1.0.2
+    vue: ^3.3.7
+    vue-router: ^4.2.5
+    vuetify: ^3.3.23
+    wrangler: ^3.15.0
+  languageName: unknown
+  linkType: soft
+
 "langchain@npm:^0.0.191":
   version: 0.0.191
   resolution: "langchain@npm:0.0.191"
@@ -6266,28 +6288,6 @@ __metadata:
   checksum: fbf823224450fa77b2759e307cbbf98a91c22e2b2ae98b5a962189c426412a342c9b637236ab2f02bcbfb15bb3fb5a2a06ce3dcc8bd100fda16087001231d82c
   languageName: node
   linkType: hard
-
-"nuxt-app@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "nuxt-app@workspace:."
-  dependencies:
-    "@cloudflare/ai": ^1.0.28
-    "@cloudflare/workers-types": ^4.20231025.0
-    "@mdi/font": ^7.3.67
-    "@microsoft/fetch-event-source": ^2.0.1
-    "@nuxt/devtools": latest
-    cheerio: ^1.0.0-rc.12
-    langchain: ^0.0.191
-    nuxt: ^3.8.0
-    pdf-parse: ^1.1.1
-    prettier: 3.1.0
-    vite-plugin-vuetify: ^1.0.2
-    vue: ^3.3.7
-    vue-router: ^4.2.5
-    vuetify: ^3.3.23
-    wrangler: ^3.15.0
-  languageName: unknown
-  linkType: soft
 
 "nuxt@npm:^3.8.0":
   version: 3.8.1

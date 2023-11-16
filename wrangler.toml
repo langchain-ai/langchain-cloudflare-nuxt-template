@@ -1,4 +1,4 @@
-name = "langchain-worker"
+name = "langchain-nuxt-cloudflare-template"
 main = "./.output/server/index.mjs"
 compatibility_date = "2023-11-15"
 compatibility_flags = [ "nodejs_compat" ]

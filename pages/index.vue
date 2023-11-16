@@ -1,37 +1,9 @@
 <script setup lang="ts">
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 
-const placeholders = [
-  'What do you think of the lyrics of the song "Friday" by Rebecca Black?',
-  'What do you think of the lyrics of the song "DNA." by Kendrick Lamar?',
-  'What do you think of the lyrics of the song "Hey Ya" by Outkast?',
-  "What are some things you'd consider when buying a new car?",
-  "Who was your best friend?",
-  "What advice do you have for pursuing a career as a software engineer?",
-  "What is your favorite food?",
-  "If you were an animal, what would you be and why?",
-  "How do you feel about ChatGPT?",
-  "What techniques do you recommend learning to become a better Super Smash Bros. player?",
-  "Would you have enjoyed surfing?",
-  "How would you fight a bear?",
-  "What was the hardest decision you ever had to make?",
-  "What Hogwarts house would you have been sorted into?",
-  "Who had the biggest influence on your life?",
-  'What do you thnk of the lyrics of the song "All Star" by Smash Mouth?',
-  "What is your opinion on tattoos of Latin mottos?",
-  "What was your proudest moment?",
-  "Why do you park on a driveway and drive on a parkway?",
-  "Sell me this pen.",
-  "How long would you survive in a zombie apocalypse?",
-  "What would you do if you won a million dollars?",
-  "If you could choose one superpower, what would it be and why?",
-];
-
 const chatContainer = ref<HTMLElement | null>(null);
 const askForm = ref<HTMLElement | null>(null);
-const questionPlaceholder = ref(
-  placeholders[Math.floor(0 * placeholders.length)],
-);
+const questionPlaceholder = ref("What does Cloudflare do?");
 const userQuestionField = ref<HTMLElement | null>(null);
 const chatHistory = ref<typeof ChatHistory | null>(null);
 const userQuestion = ref("");
@@ -108,9 +80,6 @@ const submitQuery = async (e: Event) => {
   }
 };
 
-const setRandomQuestion = () => {
-  userQuestion.value = placeholders[Math.floor(0 * placeholders.length)];
-};
 </script>
 
 <template>
@@ -130,15 +99,6 @@ const setRandomQuestion = () => {
           @click:append-inner="submitQuery"
           :disabled="isLoading"
         ></v-text-field>
-        <div class="extra-buttons-container">
-          <v-btn
-            class="random-button"
-            icon="mdi-shuffle-variant"
-            variant="plain"
-            @mouseup="setRandomQuestion"
-            :disabled="isLoading"
-          ></v-btn>
-        </div>
       </div>
     </v-form>
     <footer>
@@ -179,15 +139,7 @@ const setRandomQuestion = () => {
   flex-wrap: wrap;
   align-items: baseline;
 }
-.random-button {
-  position: relative;
-  left: 6px;
-}
-.extra-buttons-container {
-  position: relative;
-  right: 12px;
-  bottom: 16px;
-}
+
 h1,
 .question {
   margin-right: 16px;
