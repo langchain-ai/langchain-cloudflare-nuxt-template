@@ -6,3 +6,10 @@ compatibility_flags = [ "nodejs_compat" ]
 [[vectorize]]
 binding = "VECTORIZE_INDEX" # available within your Worker on env.VECTORIZE_INDEX
 index_name = "langchain_js_nuxt"
+
+[ai]
+binding = "AI"
+
+#[[kv_namespaces]]
+#binding = "langchainjs_testing"
+#id = "10f15fcffdb54e4a8ec2cc3bb1081c68"

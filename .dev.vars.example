@@ -6,3 +6,5 @@ CLOUDFLARE_ACCOUNT_ID=
 
 # https://developers.cloudflare.com/workers-ai/get-started/rest-api/
 CLOUDFLARE_WORKERSAI_API_TOKEN=
+
+ENVIRONMENT="local"

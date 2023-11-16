@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 const options = [
   'Adam Smith',
   'Albert Camus',
@@ -133,54 +134,44 @@ const askPhilosopher = async (e:Event) => {
       content: userQuestion.value || questionPlaceholder.value
     });
     userQuestion.value = '';
-    const questionResponse = await fetch(`/api/chat`, {
-      method: 'POST',
-      body: JSON.stringify({
-        person: selectedPhilosopher.value,
-        messages: chatHistory.value?.getMessages()
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    if (!questionResponse.body) {
-      return;
-    }
     if (!chatContainer.value.classList.contains('has-messages')) {
       await enterChatMode();
     }
-    const aiMessageIndex = chatHistory.value?.addNewMessage({
-      type: 'ai',
-      content: ''
-    });
-    window.history.pushState({}, document.title, '/');
-    const reader = questionResponse.body.getReader();
-    const textDecoder = new TextDecoder();
-    await Promise.race([
-      new Promise((resolve) => setTimeout(resolve, 20000)),
-      new Promise((resolve) => {
-        const stream = new ReadableStream({
-          start(controller) {
-            function push() {
-              reader.read().then(({ done, value }) => {
-                if (done) {
-                  controller.close();
-                  resolve(true);
-                  return;
-                }
-                chatHistory.value?.appendToMessage(textDecoder.decode(value), aiMessageIndex);
-                controller.enqueue(value);
-                push();
-              });
-            }
-            push();
-          }
+    let aiMessageIndex: number;
+    await fetchEventSource(`/api/chat`, {
+      method: 'POST',
+      body: JSON.stringify({
+        person: selectedPhilosopher.value,
+        messages: chatHistory.value?.getMessages(),
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      openWhenHidden: true,
+      onopen: async (response: any) => {
+        aiMessageIndex = chatHistory.value?.addNewMessage({
+          type: 'ai',
+          content: ''
         });
-      })
-    ]);
-    isLoading.value = false;
+        if (!chatContainer.value?.classList.contains('has-messages')) {
+          await enterChatMode();
+        }
+      },
+      onerror: async (e: Error) => {
+        isLoading.value = false;
+        throw e;
+      },
+      onmessage: async (msg: any) => {
+        if (msg.event === "end") {
+          isLoading.value = false;
+        } else if (msg.event === "data" && msg.data) {
+          chatHistory.value?.appendToMessage(msg.data, aiMessageIndex);
+        }
+      }
+    });
   } catch (e) {
     isLoading.value = false;
+    throw e;
   }
 };
 

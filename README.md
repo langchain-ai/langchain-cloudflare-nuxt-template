@@ -7,25 +7,27 @@ Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introdu
 1. Install dependencies:
 
 ```bash
-npm install
+$ npm install
 ```
 
 2. Create vectorize
 
 ```bash
-npx wrangler vectorize create langchain_js_nuxt --dimensions 768 --metric cosine
+$ npx wrangler vectorize create langchain_js_nuxt --preset @cf/baai/bge-base-en-v1.5
 ```
+
+See the [Wrangler CLI reference docs](https://developers.cloudflare.com/workers/wrangler/commands/#vectorize) for a full list of options.
 
 3. Copy `.dev.vars.example` to `.dev.vars` and fill in the tokens
 
 4. Build project
 
 ```bash
-npm run build
+$ npm run build
 ```
 
 5. Start in preview mode
 
 ```bash
-npm run preview
+$ npm run preview
 ```
