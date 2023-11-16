@@ -9,6 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "reload": "yarn run build && yarn run preview",
+    "deploy": "yarn run build && yarn run wrangler deploy",
     "format": "prettier . --write"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@ more relevant to an incoming question. This helps cut down on distraction from o
 pulled in by the vectorstore's similarity search, which could occur if only a single database were used.
 
 The base version runs entirely on the Cloudflare WorkersAI stack with a tiny open-source Llama 2-7B model, but you can
-swap in more powerful models such as OpenAI to improve performance in key places if desired. It uses:
+swap in more powerful models such as OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired. It uses:
 
 - A chat variant of Llama 2-7B run on Cloudflare WorkersAI
 - A Cloudflare WorkersAI embeddings model
