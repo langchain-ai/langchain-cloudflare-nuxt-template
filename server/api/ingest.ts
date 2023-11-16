@@ -45,8 +45,9 @@ export default defineEventHandler(async (event) => {
     modelName: "@cf/baai/bge-base-en-v1.5",
   });
 
+  // ~400 tokens per chunk at most
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
+    chunkSize: 2048,
     chunkOverlap: 100,
   });
 

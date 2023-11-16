@@ -72,10 +72,6 @@ export function createConversationalRetrievalChain({
     .withConfig({ runName: "AIKnowledgeRetriever" });
 
   const standaloneQuestionChain = RunnableSequence.from([
-    {
-      question: (input) => input.question,
-      chat_history: (input) => input.chat_history,
-    },
     condenseQuestionPrompt,
     model,
     new StringOutputParser(),
@@ -93,12 +89,14 @@ export function createConversationalRetrievalChain({
       knowledge_base_name: routingChain,
     },
     // Default to the AI retriever if the model does not think Cloudflare would be helpful.
-    // You could change this to a general search retriever instead.
+    // You could change this to e.g. a general search retriever instead.
     RunnableBranch.from([
       [
         (output) =>
           output.knowledge_base_name.toLowerCase().includes("cloudflare"),
         RunnableSequence.from([
+          // Retrievers only take a single string as input,
+          // so we have to extract it from the previous step output.
           (output) => output.standalone_question,
           cloudflareKnowledgeRetriever,
         ]),

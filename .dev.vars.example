@@ -7,4 +7,10 @@ CLOUDFLARE_ACCOUNT_ID=
 # https://developers.cloudflare.com/workers-ai/get-started/rest-api/
 CLOUDFLARE_WORKERSAI_API_TOKEN=
 
+# For tracing via LangSmith
+# https://docs.smith.langchain.com/
+LANGCHAIN_TRACING_V2=
+LANGCHAIN_SESSION=
+LANGCHAIN_API_KEY=
+
 ENVIRONMENT="local"

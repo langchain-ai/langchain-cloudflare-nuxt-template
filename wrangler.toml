@@ -13,7 +13,3 @@ index_name = "langchain_cloudflare_knowledge"
 
 [ai]
 binding = "AI"
-
-#[[kv_namespaces]]
-#binding = "langchainjs_testing"
-#id = "10f15fcffdb54e4a8ec2cc3bb1081c68"
