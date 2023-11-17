@@ -5,11 +5,11 @@ compatibility_flags = [ "nodejs_compat" ]
 
 [[vectorize]]
 binding = "AI_KNOWLEDGE_VECTORIZE_INDEX" # available within your Worker on env.AI_KNOWLEDGE_VECTORIZE_INDEX
-index_name = "langchain_ai_vectorize"
+index_name = "langchain_ai_knowledge_index"
 
 [[vectorize]]
 binding = "CLOUDFLARE_KNOWLEDGE_VECTORIZE_INDEX" # available within your Worker on env.CLOUDFLARE_KNOWLEDGE_VECTORIZE_INDEX
-index_name = "langchain_cloudflare_vectorize"
+index_name = "langchain_cloudflare_knowledge_index"
 
 [ai]
 binding = "AI"
