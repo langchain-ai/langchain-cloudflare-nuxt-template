@@ -35,8 +35,15 @@ Note that this currently requires you to be on a paid Cloudflare Workers plan.
 We configure the databases to work with Cloudflare WorkersAI's `@cf/baai/bge-base-en-v1.5` embeddings model.
 
 ```bash
-$ npx wrangler vectorize create langchain_cloudflare_knowledge --preset @cf/baai/bge-base-en-v1.5
-$ npx wrangler vectorize create langchain_ai_knowledge --preset @cf/baai/bge-base-en-v1.5
+$ npx wrangler vectorize create langchain_cloudflare_vectorize --preset @cf/baai/bge-base-en-v1.5
+$ npx wrangler vectorize create langchain_ai_vectorize --preset @cf/baai/bge-base-en-v1.5
+```
+
+**Note:** If you want to delete your databases, you can run the following commands:
+
+```bash
+$ npx wrangler vectorize delete langchain_cloudflare_vectorize
+$ npx wrangler vectorize delete langchain_ai_vectorize
 ```
 
 See the [Wrangler CLI reference docs](https://developers.cloudflare.com/workers/wrangler/commands/#vectorize) for a full list of options.

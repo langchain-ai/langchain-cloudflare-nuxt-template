@@ -58,15 +58,34 @@ export default defineEventHandler(async (event) => {
     cloudflareKnowledgeVectorstore,
   });
 
+  let runIdResolver: (runId: string) => void;
+  const runIdPromise = new Promise<string>((resolve) => {
+    runIdResolver = resolve;
+  });
+
   const stream = await chain
     .pipe(new HttpResponseOutputParser({ contentType: "text/event-stream" }))
-    .stream({
-      chat_history: formatChatHistory(history),
-      question: currentMessage.content,
-    });
+    .stream(
+      {
+        chat_history: formatChatHistory(history),
+        question: currentMessage.content,
+      },
+      {
+        callbacks: [
+          {
+            handleChainStart(_llm, _prompts, runId) {
+              runIdResolver(runId);
+            },
+          },
+        ],
+      },
+    );
+
+  const runId = await runIdPromise;
   return new Response(stream, {
     headers: {
       "Content-Type": "text/event-stream",
+      "X-Langsmith-Run-Id": runId,
     },
   });
 });

@@ -53,6 +53,7 @@ Your job is to pick the database that would be more useful to answer the followi
 
 You must respond with one of the following answers: "Cloudflare", "Artificial Intelligence", or "Neither". Do not include anything else in your response.`;
 
+// This is equivalent to a human message
 const routerPrompt = ChatPromptTemplate.fromTemplate(ROUTER_TEMPLATE);
 
 export function createConversationalRetrievalChain({
@@ -70,12 +71,6 @@ export function createConversationalRetrievalChain({
   const aiKnowledgeRetriever = aiKnowledgeVectorstore
     .asRetriever()
     .withConfig({ runName: "AIKnowledgeRetriever" });
-
-  const standaloneQuestionChain = RunnableSequence.from([
-    condenseQuestionPrompt,
-    model,
-    new StringOutputParser(),
-  ]).withConfig({ runName: "RephraseQuestionChain" });
 
   const routingChain = RunnableSequence.from([
     routerPrompt,
@@ -109,6 +104,12 @@ export function createConversationalRetrievalChain({
     formatDocumentsAsString,
   ]).withConfig({ runName: "RetrievalChain" });
 
+  const standaloneQuestionChain = RunnableSequence.from([
+    condenseQuestionPrompt,
+    model,
+    new StringOutputParser(),
+  ]).withConfig({ runName: "RephraseQuestionChain" });
+
   const answerChain = RunnableSequence.from([
     {
       standalone_question: (input) => input.standalone_question,
@@ -119,6 +120,16 @@ export function createConversationalRetrievalChain({
     model,
   ]).withConfig({ runName: "AnswerGenerationChain" });
 
+  /**
+   * Chain steps are:
+   * 1. Rephrase initial question as standalone question with standaloneQuestionChain
+   * 2. Choose proper vectorstore based on the question using routingChain
+   * 3. Retrieve context docs based on the output of routingChain using retrievalChain
+   * 4. Generate a final answer based on context, question, and chat history in answerChain
+   *
+   * Illustrative trace:
+   * https://smith.langchain.com/public/0474c554-01ab-4f7f-937f-b6c205fa91f5/r
+   */
   return RunnableSequence.from([
     {
       standalone_question: standaloneQuestionChain,

@@ -14,19 +14,21 @@ const upsertDocsToVectorstore = async (
   const ids = [];
   const encoder = new TextEncoder();
   for (const doc of docs) {
-    // Vectorize does not support object metadata.
+    // Vectorize does not support object metadata, and we won't be needing it for
+    // this app.
     doc.metadata = {};
     const insecureHash = await crypto.subtle.digest(
       "SHA-1",
       encoder.encode(doc.pageContent),
     );
+    // Use a hash of the page content as an id
     const hashArray = Array.from(new Uint8Array(insecureHash));
     const readableId = hashArray
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
     ids.push(readableId);
   }
-  const result = vectorstore.addDocuments(docs, { ids });
+  const result = await vectorstore.addDocuments(docs, { ids });
   return result;
 };
 

@@ -3,11 +3,14 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 const chatContainer = ref<HTMLElement | null>(null);
 const askForm = ref<HTMLElement | null>(null);
-const questionPlaceholder = ref("What does Cloudflare do?");
+const questionPlaceholder = ref(
+  "Ask me about Cloudflare or autonomous agents!",
+);
 const userQuestionField = ref<HTMLElement | null>(null);
 const chatHistory = ref<typeof ChatHistory | null>(null);
 const userQuestion = ref("");
 const isLoading = ref(false);
+const currentTraceUrl = ref<string | null>(null);
 
 const enterChatMode = async () => {
   window.requestAnimationFrame(() => {
@@ -20,6 +23,20 @@ const enterChatMode = async () => {
     chatContainer.value?.classList.add("has-messages");
   });
   questionPlaceholder.value = "Ask a follow-up!";
+};
+
+const shareRun = async (runId: string) => {
+  const response = await fetch("/api/trace", {
+    method: "POST",
+    body: JSON.stringify({
+      run_id: runId,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const parsedResponse = await response.json();
+  currentTraceUrl.value = parsedResponse.url;
 };
 
 const submitQuery = async (e: Event) => {
@@ -50,13 +67,17 @@ const submitQuery = async (e: Event) => {
         "Content-Type": "application/json",
       },
       openWhenHidden: true,
-      onopen: async (response: any) => {
+      onopen: async (response: Response) => {
         aiMessageIndex = chatHistory.value?.addNewMessage({
           type: "ai",
           content: "",
         });
         if (!chatContainer.value?.classList.contains("has-messages")) {
           await enterChatMode();
+        }
+        const runId = response.headers.get("x-langsmith-run-id");
+        if (runId) {
+          await shareRun(runId);
         }
       },
       onerror: async (e: Error) => {
@@ -97,7 +118,19 @@ const submitQuery = async (e: Event) => {
           @keydown.enter="submitQuery"
           @click:append-inner="submitQuery"
           :disabled="isLoading"
-        ></v-text-field>
+        >
+          <template v-slot:loader>
+            <v-progress-linear
+              :active="isLoading"
+              height="2"
+              color="blue"
+              indeterminate
+            ></v-progress-linear>
+          </template>
+        </v-text-field>
+        <v-btn v-if="currentTraceUrl" class="trace-button">
+          <a :href="currentTraceUrl" target="_blank"> ⚒️ View Trace </a>
+        </v-btn>
       </div>
     </v-form>
     <footer>
@@ -152,6 +185,10 @@ const submitQuery = async (e: Event) => {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
+}
+
+.trace-button {
+  align-self: center;
 }
 
 h1,
