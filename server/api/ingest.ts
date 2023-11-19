@@ -17,6 +17,7 @@ const upsertDocsToVectorstore = async (
     // Vectorize does not support object metadata, and we won't be needing it for
     // this app.
     doc.metadata = {};
+    console.log(doc.pageContent.length);
     const insecureHash = await crypto.subtle.digest(
       "SHA-1",
       encoder.encode(doc.pageContent),
@@ -28,6 +29,7 @@ const upsertDocsToVectorstore = async (
       .join("");
     ids.push(readableId);
   }
+  console.log("ABOUT TO UPSERT", docs, ids);
   const result = await vectorstore.addDocuments(docs, { ids });
   return result;
 };
@@ -49,7 +51,7 @@ export default defineEventHandler(async (event) => {
 
   // ~400 tokens per chunk at most
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 2048,
+    chunkSize: 1024,
     chunkOverlap: 100,
   });
 
@@ -62,7 +64,9 @@ export default defineEventHandler(async (event) => {
   const aiKnowledgeVectorstore = new CloudflareVectorizeStore(embeddings, {
     index: cloudflareBindings.AI_KNOWLEDGE_VECTORIZE_INDEX,
   });
+  console.log("UPSERTING AI DOCS", splitAiAgentDocs);
   await upsertDocsToVectorstore(aiKnowledgeVectorstore, splitAiAgentDocs);
+  console.log("UPSERTED AI DOCS");
 
   // Ingest content about Cloudflare
   // Need to polyfill a method that Cloudflare Workers is missing for the PDF loader
@@ -80,6 +84,7 @@ export default defineEventHandler(async (event) => {
       index: cloudflareBindings.CLOUDFLARE_KNOWLEDGE_VECTORIZE_INDEX,
     },
   );
+  console.log("UPSERTING KNOWLEDGE DOCS", splitCloudflareDocs);
   await upsertDocsToVectorstore(
     cloudflareKnowledgeVectorstore,
     splitCloudflareDocs,
