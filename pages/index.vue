@@ -10,6 +10,7 @@ const userQuestionField = ref<HTMLElement | null>(null);
 const chatHistory = ref<typeof ChatHistory | null>(null);
 const userQuestion = ref("");
 const isLoading = ref(false);
+const currentRunId = ref<string | null>(null);
 const currentTraceUrl = ref<string | null>(null);
 
 const enterChatMode = async () => {
@@ -35,6 +36,9 @@ const shareRun = async (runId: string) => {
       "Content-Type": "application/json",
     },
   });
+  if (!response.ok) {
+    throw new Error("Share unsuccessful. Please try again later.");
+  }
   const parsedResponse = await response.json();
   currentTraceUrl.value = parsedResponse.url;
 };
@@ -75,7 +79,10 @@ const submitQuery = async (e: Event) => {
         if (!chatContainer.value?.classList.contains("has-messages")) {
           await enterChatMode();
         }
-        const runId = response.headers.get("x-langsmith-run-id");
+        currentRunId.value = response.headers.get("x-langsmith-run-id");
+      },
+      onclose: async () => {
+        const runId = currentRunId.value;
         if (runId) {
           await shareRun(runId);
         }
@@ -199,9 +206,6 @@ h1,
   flex-grow: 1;
   max-width: 100%;
   min-width: 300px;
-}
-.tagline h1 {
-  display: flex;
 }
 input.question {
   width: 100%;

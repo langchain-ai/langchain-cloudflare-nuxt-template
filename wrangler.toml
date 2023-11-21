@@ -13,3 +13,7 @@ index_name = "langchain_cloudflare_docs_index"
 
 [ai]
 binding = "AI"
+
+[vars]
+LANGCHAIN_TRACING_V2 = "true"
+LANGCHAIN_SESSION = "nuxt-cloudflare-langchain"
