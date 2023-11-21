@@ -22,7 +22,7 @@ Here's how it works:
 
 0. The vectorstores are populated with ingested data via a local ping to the Nuxt server route under `/server/api/ingest.ts`.
 1. An incoming question is routed to the Nuxt server route under `/server/api/chat.post.ts`. This route constructs and calls a [LangChain Expression Language](https://js.langchain.com/docs/expression_language/) chain located under `/utils/conversational_retrieval_chain.ts`.
-2. The chain first transforms the original question into a _standalone question_, free of pronouns and other references to chat history. This is important since vectorstores return results based on similarity between ingested docs and the query.
+2. If there have been previous messages in the conversation, the chain first transforms the original question into a _standalone question_, free of pronouns and other references to chat history. This is important since vectorstores return results based on similarity between ingested docs and the query.
 3. Based on this rephrased query, the chain selects which vectorstore to retrieve from.
 4. The chain retrieves context docs based on the output of the previous step from the chosen vectorstore.
 5. The chain generates a final answer based on this retrieved context, the standalone question, and any chat history.

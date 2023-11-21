@@ -4,12 +4,11 @@ import type { BaseLanguageModel } from "langchain/base_language";
 import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
 import { RunnableSequence, RunnableBranch } from "langchain/schema/runnable";
 import { StringOutputParser } from "langchain/schema/output_parser";
-import { formatDocumentsAsString } from "langchain/util/document";
 
 const CONDENSE_QUESTION_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
 Your job is to remove references to chat history from incoming questions, rephrasing them as standalone questions.`;
 
-const CONDENSE_QUESTION_HUMAN_TEMPLATE = `Using only any previous conversation as context, rephrase the following question to be a standalone question.
+const CONDENSE_QUESTION_HUMAN_TEMPLATE = `Using only previous conversation as context, rephrase the following question to be a standalone question.
 
 Do not respond with anything other than a rephrased standalone question. Be concise.
 
@@ -22,16 +21,16 @@ const condenseQuestionPrompt = ChatPromptTemplate.fromMessages([
   ["human", CONDENSE_QUESTION_HUMAN_TEMPLATE],
 ]);
 
-const ANSWER_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources. Using the provided context, answer the user's question to the best of your ability using the resources provided.
+const ANSWER_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources. Using the provided context, answer the user's question to the best of your ability using only the resources provided.
 Generate a concise answer for a given question based solely on the provided context. You must only use information from the provided search results. Use an unbiased and journalistic tone. Combine search results together into a coherent answer. Do not repeat text.
-If there is nothing in the context relevant to the question at hand, just say "Hmm, I'm not sure." Don't try to make up an answer.
+If there is no information in the context relevant to the question at hand, just say "Hmm, I'm not sure."
 Anything between the following \`context\` html blocks is retrieved from a knowledge bank, not part of the conversation with the user.
 
 <context>
   {context}
 </context>
 
-REMEMBER: If there is no relevant information within the context, just say "Hmm, I'm not sure." Don't try to make up an answer.`;
+REMEMBER: You must only use facts from the provided context.`;
 
 const ANSWER_HUMAN_TEMPLATE = `Answer the following question to the best of your ability. This is extremely important for my career!
 
@@ -55,6 +54,12 @@ You must respond with one of the following answers: "Cloudflare", "Artificial In
 
 // This is equivalent to a human message
 const routerPrompt = ChatPromptTemplate.fromTemplate(ROUTER_TEMPLATE);
+
+const formatDocuments = (docs: Document[]) => {
+  return docs.map((doc, i) => {
+    return `<doc id=${i}>\n${doc.pageContent}\n</doc>`;
+  });
+};
 
 export function createConversationalRetrievalChain({
   model,
@@ -101,7 +106,7 @@ export function createConversationalRetrievalChain({
         aiKnowledgeRetriever,
       ]),
     ]),
-    formatDocumentsAsString,
+    formatDocuments,
   ]).withConfig({ runName: "RetrievalChain" });
 
   const standaloneQuestionChain = RunnableSequence.from([
@@ -122,7 +127,8 @@ export function createConversationalRetrievalChain({
 
   /**
    * Chain steps are:
-   * 1. Rephrase initial question as standalone question with standaloneQuestionChain
+   * 1. If there is chat history, rephrase initial question as standalone question with standaloneQuestionChain
+   *   If question is not a followup, pass the user's question directly through
    * 2. Choose proper vectorstore based on the question using routingChain
    * 3. Retrieve context docs based on the output of routingChain using retrievalChain
    * 4. Generate a final answer based on context, question, and chat history in answerChain
@@ -132,7 +138,10 @@ export function createConversationalRetrievalChain({
    */
   return RunnableSequence.from([
     {
-      standalone_question: standaloneQuestionChain,
+      standalone_question: RunnableBranch.from([
+        [(input) => input.chat_history.length > 0, standaloneQuestionChain],
+        (input) => input.question,
+      ]),
       chat_history: (input) => input.chat_history,
     },
     answerChain,

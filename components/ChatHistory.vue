@@ -45,7 +45,10 @@ defineExpose({
 
 <template>
   <div ref="chatMessages" class="chat-messages">
-    <ChatMessage v-for="message in messages" :message="message"></ChatMessage>
+    <ChatMessage
+      v-for="message in messages.filter((m) => !!m.content)"
+      :message="message"
+    ></ChatMessage>
   </div>
 </template>
 

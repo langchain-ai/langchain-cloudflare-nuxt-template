@@ -80,7 +80,7 @@ const submitQuery = async (e: Event) => {
           await shareRun(runId);
         }
       },
-      onerror: async (e: Error) => {
+      onerror: (e: Error) => {
         isLoading.value = false;
         throw e;
       },
