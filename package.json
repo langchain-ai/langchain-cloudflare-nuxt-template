@@ -27,7 +27,7 @@
     "@mdi/font": "^7.3.67",
     "@microsoft/fetch-event-source": "^2.0.1",
     "cheerio": "^1.0.0-rc.12",
-    "langchain": "^0.0.191",
+    "langchain": "^0.0.196",
     "langsmith": "^0.0.48",
     "pdf-parse": "^1.1.1"
   }
