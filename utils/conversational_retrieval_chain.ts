@@ -1,6 +1,7 @@
 import type { VectorStore } from "langchain/vectorstores/base";
 import type { BaseLanguageModel } from "langchain/base_language";
 
+import { Document } from "langchain/document";
 import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
 import { RunnableSequence, RunnableBranch } from "langchain/schema/runnable";
 import { StringOutputParser } from "langchain/schema/output_parser";
@@ -61,7 +62,7 @@ const routerPrompt = ChatPromptTemplate.fromTemplate(ROUTER_TEMPLATE);
 const formatDocuments = (docs: Document[]) => {
   return docs.map((doc, i) => {
     return `<doc id=${i}>\n${doc.pageContent}\n</doc>`;
-  });
+  }).join("\n");
 };
 
 export function createConversationalRetrievalChain({
