@@ -124,7 +124,7 @@ $ npm run deploy
 
 You'll need to set private encrypted environment variables in your Cloudflare console under your Worker's `Settings -> Variables` page for `CLOUDFLARE_WORKERSAI_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `LANGCHAIN_API_KEY` if using tracing:
 
-![](/public/cloudflare-env-vars.png)
+![](/public/images/cloudflare-env-vars.png)
 
 ## Customization
 
