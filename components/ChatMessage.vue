@@ -13,7 +13,7 @@ const props = defineProps<{
 
 <template>
   <div class="message-container" :class="props.message.type">
-    {{ props.message.content }}
+    {{ props.message.content.trim() }}
   </div>
 </template>
 

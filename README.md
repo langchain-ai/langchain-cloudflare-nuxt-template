@@ -4,7 +4,7 @@ This repo contains an example of a conversational retrieval system that can rout
 more relevant to an incoming question. This helps cut down on distraction from off-topic documents getting
 pulled in by the vectorstore's similarity search, which could occur if only a single database were used, and is particularly important for small models.
 
-🚀 **Live version here:** https://langchain-nuxt-cloudflare-template.jacob-ee9.workers.dev/
+🚀 **Live version here:** https://langchain-cloudflare-nuxt-template.jacob-ee9.workers.dev/
 
 The base version runs entirely on the Cloudflare WorkersAI stack with a tiny open-source Llama 2-7B model, but you can
 swap in more powerful models such as OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired. It uses:

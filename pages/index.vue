@@ -142,7 +142,7 @@ const submitQuery = async (e: Event) => {
     </v-form>
     <footer>
       <a
-        href="https://github.com/langchain-ai/langchain-nuxt-cloudflare-template/"
+        href="https://github.com/langchain-ai/langchain-cloudflare-nuxt-template/"
         class="link-row"
         target="_blank"
       >

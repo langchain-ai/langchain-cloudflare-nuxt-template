@@ -1,4 +1,4 @@
-name = "langchain-nuxt-cloudflare-template"
+name = "langchain-cloudflare-nuxt-template"
 main = "./.output/server/index.mjs"
 compatibility_date = "2023-11-15"
 compatibility_flags = [ "nodejs_compat" ]
@@ -16,4 +16,4 @@ binding = "AI"
 
 [vars]
 LANGCHAIN_TRACING_V2 = "true"
-LANGCHAIN_SESSION = "nuxt-cloudflare-langchain"
+LANGCHAIN_SESSION = "cloudflare-nuxt"

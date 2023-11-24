@@ -1,7 +1,7 @@
 import type { VectorStore } from "langchain/vectorstores/base";
 import type { BaseLanguageModel } from "langchain/base_language";
+import type { Document } from "langchain/document";
 
-import { Document } from "langchain/document";
 import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
 import { RunnableSequence, RunnableBranch } from "langchain/schema/runnable";
 import { StringOutputParser } from "langchain/schema/output_parser";
