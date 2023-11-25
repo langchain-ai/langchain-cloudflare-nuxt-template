@@ -67,10 +67,12 @@ const formatDocuments = (docs: Document[]) => {
 
 export function createConversationalRetrievalChain({
   model,
+  largerModel,
   cloudflareKnowledgeVectorstore,
   aiKnowledgeVectorstore,
 }: {
   model: BaseLanguageModel;
+  largerModel?: BaseLanguageModel;
   cloudflareKnowledgeVectorstore: VectorStore;
   aiKnowledgeVectorstore: VectorStore;
 }) {
@@ -83,7 +85,7 @@ export function createConversationalRetrievalChain({
 
   const routingChain = RunnableSequence.from([
     routerPrompt,
-    model,
+    largerModel ?? model,
     new StringOutputParser(),
   ]).withConfig({ runName: "RoutingChain" });
 
@@ -115,7 +117,7 @@ export function createConversationalRetrievalChain({
 
   const standaloneQuestionChain = RunnableSequence.from([
     condenseQuestionPrompt,
-    model,
+    largerModel ?? model,
     new StringOutputParser(),
   ]).withConfig({ runName: "RephraseQuestionChain" });
 
