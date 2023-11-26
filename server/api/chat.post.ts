@@ -1,8 +1,7 @@
-import { HumanMessage, AIMessage } from "langchain/schema";
 import { HttpResponseOutputParser } from "langchain/output_parsers";
 
-// import { BedrockChat } from "langchain/chat_models/bedrock";
-import { ChatCloudflareWorkersAI } from "langchain/chat_models/cloudflare_workersai";
+import { BedrockChat } from "langchain/chat_models/bedrock/web";
+import { CloudflareWorkersAI } from "langchain/llms/cloudflare_workersai";
 import { CloudflareVectorizeStore } from "langchain/vectorstores/cloudflare_vectorize";
 import { CloudflareWorkersAIEmbeddings } from "langchain/embeddings/cloudflare_workersai";
 import { createConversationalRetrievalChain } from "~/utils/conversational_retrieval_chain";
@@ -12,13 +11,13 @@ const formatChatHistory = (
 ) => {
   const messages = chatHistory.map((message) => {
     if (message.type === "ai") {
-      return new AIMessage({ content: message.content });
+      return `Assistant: ${message.content}`;
     } else {
-      return new HumanMessage({ content: message.content });
+      return `Human: ${message.content}`;
     }
   });
 
-  return messages;
+  return messages.join("\n");
 };
 
 export default defineEventHandler(async (event) => {
@@ -47,8 +46,8 @@ export default defineEventHandler(async (event) => {
     },
   );
 
-  const cloudflareModel = new ChatCloudflareWorkersAI({
-    model: "@cf/meta/llama-2-7b-chat-int8",
+  const cloudflareModel = new CloudflareWorkersAI({
+    model: "@cf/mistral/mistral-7b-instruct-v0.1",
     cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareApiToken: process.env.CLOUDFLARE_WORKERSAI_API_TOKEN,
   });
@@ -56,14 +55,14 @@ export default defineEventHandler(async (event) => {
   // Uncomment and install peer dependencies to use a larger model for
   // more reasoning-intensive, low-token tasks like routing and question rephrasing
 
-  // const bedrockModel = new BedrockChat({
-  //   model: "anthropic.claude-v2",
-  //   region: process.env.BEDROCK_AWS_REGION,
-  //   credentials: {
-  //     accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID!,
-  //     secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY!,
-  //   },
-  // });
+  const bedrockModel = new BedrockChat({
+    model: "anthropic.claude-v2",
+    region: process.env.BEDROCK_AWS_REGION,
+    credentials: {
+      accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY!,
+    },
+  });
 
   const chain = createConversationalRetrievalChain({
     model: cloudflareModel,

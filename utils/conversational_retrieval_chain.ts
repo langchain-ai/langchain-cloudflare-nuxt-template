@@ -2,66 +2,73 @@ import type { VectorStore } from "langchain/vectorstores/base";
 import type { BaseLanguageModel } from "langchain/base_language";
 import type { Document } from "langchain/document";
 
-import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
+import { ChatPromptTemplate } from "langchain/prompts";
 import { RunnableSequence, RunnableBranch } from "langchain/schema/runnable";
 import { StringOutputParser } from "langchain/schema/output_parser";
 
-const CONDENSE_QUESTION_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
-Your job is to remove references to chat history from incoming questions, rephrasing them as standalone questions.`;
+const CONDENSE_QUESTION_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
+Your job is to remove references to chat history from incoming questions, rephrasing them as standalone questions.
+The exception is if the question is directly asking about the conversation. In this case, just return the original question.
 
-const CONDENSE_QUESTION_HUMAN_TEMPLATE = `Using only previous conversation as context, rephrase the following question to be a standalone question.
+Here is the prior chat history:
+
+<chat_history>
+{chat_history}
+</chat_history>
+
+Now, convert the following question to be an dereferenced question that keeps the exact meaning of the original question, but is free of references to the chat history.
 
 Do not respond with anything other than a rephrased standalone question. Be concise.
 
-<question>
-  {question}
-</question>`;
-const condenseQuestionPrompt = ChatPromptTemplate.fromMessages([
-  ["system", CONDENSE_QUESTION_SYSTEM_TEMPLATE],
-  new MessagesPlaceholder("chat_history"),
-  ["human", CONDENSE_QUESTION_HUMAN_TEMPLATE],
-]);
+Question: {question}
+Standalone question:`;
 
-const ANSWER_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
-Using the provided context, answer the user's question to the best of your ability using only the resources provided.
-Generate a concise answer for a given question based solely on the provided context.
-You must only use information from the provided search results. Use an unbiased and journalistic tone. Combine search results together into a coherent answer. Do not repeat text.
-When possible, use bullet points for readability.
-If there is no information in the context relevant to the question at hand, just say "Hmm, I'm not sure."
-Anything between the following \`context\` html blocks is retrieved from a knowledge bank, not part of the conversation with the user.
-
-<context>
-  {context}
-</context>
-
-REMEMBER: You must only use facts from the provided context.`;
-
-const ANSWER_HUMAN_TEMPLATE = `Answer the following question to the best of your ability. This is extremely important for my career!
-
-{standalone_question}`;
-
-const answerPrompt = ChatPromptTemplate.fromMessages([
-  ["system", ANSWER_SYSTEM_TEMPLATE],
-  new MessagesPlaceholder("chat_history"),
-  ["human", ANSWER_HUMAN_TEMPLATE],
-]);
+// This is equivalent to a human message
+const condenseQuestionPrompt = ChatPromptTemplate.fromTemplate(CONDENSE_QUESTION_TEMPLATE);
 
 const ROUTER_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
 You have access to two databases: one with information about Cloudflare, and another about artificial intelligence. 
 Your job is to pick the database that would be more useful to answer the following question:
 
 <question>
-  {standalone_question}
+{standalone_question}
 </question>
 
-You must respond with one of the following answers: "Cloudflare", "Artificial Intelligence", or "Neither". Do not include anything else in your response.`;
+You must respond with only one following answers: "Cloudflare", "Artificial Intelligence", or "Neither". Do not include anything else in your response.
 
-// This is equivalent to a human message
+Answer:`;
+
 const routerPrompt = ChatPromptTemplate.fromTemplate(ROUTER_TEMPLATE);
+
+const ANSWER_TEMPLATE = `You are an AI assistant, skilled at interpreting and answering questions based on provided sources.
+You are having a conversation with a human.
+Using the provided context, answer the user's question to the best of your ability using only the resources provided.
+Use bullet points for readability when possible.
+You must only use information from the provided context. Use an unbiased and journalistic tone, but use as much detail as you have available. Do not repeat text.
+
+You must always use the following format. Pay close attention to it:
+
+Question: The human's question
+Answer: Your generated answer, using only facts from the previously provided context
+STOP: Stop generating!
+
+Anything between the following \`context\` html blocks is provided context from a knowledge bank, not part of the conversation with the user.
+
+<context>
+{context}
+</context>
+
+Now, answer the following question to the best of your ability. 
+REMEMBER: Only answer the human's question directly, and add "STOP:" after each answer.
+
+Question: {standalone_question}
+Answer:`;
+
+const answerPrompt = ChatPromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
 const formatDocuments = (docs: Document[]) => {
   return docs.map((doc, i) => {
-    return `<doc id=${i}>\n${doc.pageContent}\n</doc>`;
+    return `<doc>\n${doc.pageContent}\n</doc>`;
   }).join("\n");
 };
 
@@ -77,10 +84,10 @@ export function createConversationalRetrievalChain({
   aiKnowledgeVectorstore: VectorStore;
 }) {
   const cloudflareKnowledgeRetriever = cloudflareKnowledgeVectorstore
-    .asRetriever()
+    .asRetriever({ k: 3 })
     .withConfig({ runName: "CloudflareKnowledgeRetriever" });
   const aiKnowledgeRetriever = aiKnowledgeVectorstore
-    .asRetriever()
+    .asRetriever({ k: 3 })
     .withConfig({ runName: "AIKnowledgeRetriever" });
 
   const routingChain = RunnableSequence.from([
