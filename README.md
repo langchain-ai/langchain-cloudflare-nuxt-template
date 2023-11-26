@@ -1,4 +1,4 @@
-# Cloudflare + LangChain + Nuxt Multi-source Chatbot
+# ☁️🦜 Cloudflare + LangChain + Nuxt Multi-source Chat
 
 This repo contains an example of a conversational retrieval system that can route between multiple data sources, choosing the one
 more relevant to an incoming question. This helps cut down on distraction from off-topic documents getting
