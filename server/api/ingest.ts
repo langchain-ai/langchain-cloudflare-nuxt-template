@@ -1,11 +1,12 @@
-import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { Document } from "langchain/document";
 import type { VectorStore } from "langchain/vectorstores/base";
-import type { Document } from "langchain/document";
 
 import { CloudflareVectorizeStore } from "langchain/vectorstores/cloudflare_vectorize";
 import { CloudflareWorkersAIEmbeddings } from "langchain/embeddings/cloudflare_workersai";
+
+import { BLOG_POST_TEXT } from "~/utils/data/lilian_weng_agents_blog";
 
 const upsertDocsToVectorstore = async (
   vectorstore: VectorStore,
@@ -47,18 +48,17 @@ export default defineEventHandler(async (event) => {
     modelName: "@cf/baai/bge-base-en-v1.5",
   });
 
-  // ~200 tokens per chunk at most
+  // Tune based on your raw content.
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1024,
     chunkOverlap: 100,
   });
 
   // Ingest content from a blog post on AI agents
-  const webLoader = new CheerioWebBaseLoader(
-    "https://lilianweng.github.io/posts/2023-06-23-agent/",
-  );
-  const aiAgentDocs = await webLoader.load();
-  const splitAiAgentDocs = await splitter.splitDocuments(aiAgentDocs);
+  const aiAgentDocument = new Document({
+    pageContent: BLOG_POST_TEXT,
+  });
+  const splitAiAgentDocs = await splitter.splitDocuments([aiAgentDocument]);
   const aiKnowledgeVectorstore = new CloudflareVectorizeStore(embeddings, {
     index: cloudflareBindings.AI_KNOWLEDGE_VECTORIZE_INDEX,
   });
@@ -72,7 +72,9 @@ export default defineEventHandler(async (event) => {
     "https://www.cloudflare.com/resources/assets/slt3lc6tev37/3HWObubm6fybC0FWUdFYAJ/5d5e3b0a4d9c5a7619984ed6076f01fe/Cloudflare_for_Campaigns_Security_Guide.pdf",
   );
   const cloudflarePdfBlob = await cloudflareFetchResponse.blob();
-  const pdfLoader = new WebPDFLoader(cloudflarePdfBlob);
+  const pdfLoader = new WebPDFLoader(cloudflarePdfBlob, {
+    parsedItemSeparator: "",
+  });
   const cloudflareDocs = await pdfLoader.load();
   const splitCloudflareDocs = await splitter.splitDocuments(cloudflareDocs);
   const cloudflareKnowledgeVectorstore = new CloudflareVectorizeStore(

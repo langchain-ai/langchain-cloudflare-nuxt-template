@@ -3,9 +3,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 const chatContainer = ref<HTMLElement | null>(null);
 const askForm = ref<HTMLElement | null>(null);
-const questionPlaceholder = ref(
-  "Ask me about Cloudflare or autonomous agents!",
-);
+const questionPlaceholder = ref("Ask me about Cloudflare or agents!");
 const userQuestionField = ref<HTMLElement | null>(null);
 const chatHistory = ref<typeof ChatHistory | null>(null);
 const userQuestion = ref("");

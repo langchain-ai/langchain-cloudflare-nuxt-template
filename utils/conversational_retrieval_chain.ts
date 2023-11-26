@@ -11,7 +11,7 @@ Your job is to remove references to chat history from incoming questions, rephra
 
 const CONDENSE_QUESTION_HUMAN_TEMPLATE = `Using only previous conversation as context, rephrase the following question to be a standalone question.
 
-Do not respond with anything other than a rephrased standalone question. Be concise.
+Do not respond with anything other than a rephrased standalone question. Be concise, but complete and resolve all references to the chat history.
 
 <question>
   {question}
@@ -20,30 +20,6 @@ const condenseQuestionPrompt = ChatPromptTemplate.fromMessages([
   ["system", CONDENSE_QUESTION_SYSTEM_TEMPLATE],
   new MessagesPlaceholder("chat_history"),
   ["human", CONDENSE_QUESTION_HUMAN_TEMPLATE],
-]);
-
-const ANSWER_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
-Using the provided context, answer the user's question to the best of your ability using only the resources provided.
-Generate a concise answer for a given question based solely on the provided context.
-You must only use information from the provided search results. Use an unbiased and journalistic tone. Combine search results together into a coherent answer. Do not repeat text.
-When possible, use bullet points for readability.
-If there is no information in the context relevant to the question at hand, just say "Hmm, I'm not sure."
-Anything between the following \`context\` html blocks is retrieved from a knowledge bank, not part of the conversation with the user.
-
-<context>
-  {context}
-</context>
-
-REMEMBER: You must only use facts from the provided context.`;
-
-const ANSWER_HUMAN_TEMPLATE = `Answer the following question to the best of your ability. This is extremely important for my career!
-
-{standalone_question}`;
-
-const answerPrompt = ChatPromptTemplate.fromMessages([
-  ["system", ANSWER_SYSTEM_TEMPLATE],
-  new MessagesPlaceholder("chat_history"),
-  ["human", ANSWER_HUMAN_TEMPLATE],
 ]);
 
 const ROUTER_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
@@ -59,10 +35,37 @@ You must respond with one of the following answers: "Cloudflare", "Artificial In
 // This is equivalent to a human message
 const routerPrompt = ChatPromptTemplate.fromTemplate(ROUTER_TEMPLATE);
 
+const ANSWER_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
+Using the provided context, answer the user's question to the best of your ability using only the resources provided.
+Generate a concise answer for a given question based solely on the provided context.
+You must only use information from the provided search results. Use an unbiased and journalistic tone. Combine search results together into a coherent answer. Do not repeat text.
+If there is no information in the context relevant to the question at hand, just say "Hmm, I'm not sure."
+Anything between the following \`context\` html blocks is retrieved from a knowledge bank, not part of the conversation with the user.
+
+<context>
+  {context}
+</context>
+
+REMEMBER: Be concise, and only use facts from the provided context.`;
+
+const ANSWER_HUMAN_TEMPLATE = `Answer the following question to the best of your ability. This is extremely important for my career!
+
+{standalone_question}`;
+
+const answerPrompt = ChatPromptTemplate.fromMessages([
+  ["system", ANSWER_SYSTEM_TEMPLATE],
+  // Adding chat history as part of the final answer generation is distracting for a small model like Llama 2-7B.
+  // If using a more powerful model, you can re-enable to better support meta-questions about the conversation.
+  // new MessagesPlaceholder("chat_history"),
+  ["human", ANSWER_HUMAN_TEMPLATE],
+]);
+
 const formatDocuments = (docs: Document[]) => {
-  return docs.map((doc, i) => {
-    return `<doc id=${i}>\n${doc.pageContent}\n</doc>`;
-  }).join("\n");
+  return docs
+    .map((doc, i) => {
+      return `<doc>\n${doc.pageContent}\n</doc>`;
+    })
+    .join("\n");
 };
 
 export function createConversationalRetrievalChain({

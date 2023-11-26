@@ -7,7 +7,7 @@ pulled in by the vectorstore's similarity search, which could occur if only a si
 🚀 **Live version here:** https://langchain-cloudflare-nuxt-template.jacob-ee9.workers.dev/
 
 The base version runs entirely on the Cloudflare WorkersAI stack with a tiny open-source Llama 2-7B model, but you can
-swap in more powerful models such as OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired. It uses:
+swap in more powerful models such as Anthropic's `claude-2` or OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired. It uses:
 
 - A chat variant of Llama 2-7B run via the [Cloudflare WorkersAI network](https://developers.cloudflare.com/workers-ai/)
 - A Cloudflare WorkersAI embeddings model
@@ -25,7 +25,7 @@ Here's how it works:
 2. If there have been previous messages in the conversation, the chain first transforms the original question into a _standalone question_, free of pronouns and other references to chat history. This is important since vectorstores return results based on similarity between ingested docs and the query.
 3. Based on this rephrased query, the chain selects which vectorstore to retrieve from.
 4. The chain retrieves context docs based on the output of the previous step from the chosen vectorstore.
-5. The chain generates a final answer based on this retrieved context, the standalone question, and any chat history.
+5. The chain generates a final answer based on this retrieved context and the standalone question.
 
 Here's an illustrative [LangSmith trace of the steps](https://smith.langchain.com/public/0474c554-01ab-4f7f-937f-b6c205fa91f5/r) involved.
 
@@ -126,14 +126,28 @@ You'll need to set private encrypted environment variables in your Cloudflare co
 
 ![](/public/images/cloudflare-env-vars.png)
 
-## Customization
+## Improving performance
 
-By default, the only APIs and resources this app uses are within Cloudflare. However, by leveraging OpenAI's best-in-class private models at key points
+By default, the only APIs and resources this app uses are within Cloudflare. However, by leveraging frontier models with higher reasoning capabilities at key points
 in the retrieval chain, we can drastically improve performance without using an excessive number of tokens.
 
 The two places where this increased reasoning power are most helpful are in the question rephrase step and the routing step, and coincidentally,
 both steps are lighter on tokens because they do not involve passing a large list of retrieved docs as context.
 
+If you set the following environment variables, this app will use Anthropic's Claude 2 hosted via AWS Bedrock for routing and follow-up question rephrasing:
+
+```ini
+BEDROCK_AWS_ACCESS_KEY_ID=
+BEDROCK_AWS_SECRET_ACCESS_KEY=
+BEDROCK_AWS_REGION=
+```
+
+To avoid distraction for the default Llama 2 model, we do not pass chat history into the final answer generation call. This makes it incapable of answering certain
+meta-questions about the conversation such as "how many questions have I asked?". To properly answer those questions, swap in a more powerful model and
+uncomment the corresponding line in `utils/conversational_retrieval_chain.ts`.
+
 ## Thank you!
+
+Special thanks to [Pooya Parsa](https://x.com/_pi0_) for help with integrating Nuxt with Cloudflare's Wrangler.
 
 For more, follow LangChain on X (formerly Twitter) [@LangChainAI](https://x.com/langchainai/).

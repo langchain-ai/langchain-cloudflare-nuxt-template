@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const messages = ref<Message[]>([]);
 const chatMessages = ref<HTMLElement | null>(null);
+const stopReceived = ref<boolean[]>([]);
 
 const scrollHistoryToBottom = () => {
   if (chatMessages.value) {
@@ -15,10 +16,15 @@ const addNewMessage = (message: Message) => {
 };
 
 const appendToMessage = (chunk: string, index: number) => {
-  if (!messages.value.length) {
+  if (!messages.value.length || stopReceived.value[index]) {
     return;
   }
-  messages.value[index].content = messages.value[index].content + chunk;
+  let newContent = messages.value[index].content + chunk;
+  if (newContent.includes("STOP")) {
+    newContent = newContent.slice(0, newContent.indexOf("STOP"));
+    stopReceived.value[index] = true;
+  }
+  messages.value[index].content = newContent;
   scrollHistoryToBottom();
 };
 
