@@ -55,16 +55,17 @@ export default defineEventHandler(async (event) => {
 
   // Set process.env.BEDROCK_AWS_ACCESS_KEY_ID to use a larger model for more reasoning-intensive,
   // low-token tasks like routing and question rephrasing
-  const bedrockModel = process.env.BEDROCK_AWS_ACCESS_KEY_ID
-    ? new BedrockChat({
-        model: "anthropic.claude-v2",
-        region: process.env.BEDROCK_AWS_REGION,
-        credentials: {
-          accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY!,
-        },
-      })
-    : undefined;
+  const bedrockModel =
+    process.env.BEDROCK_AWS_ACCESS_KEY_ID !== undefined
+      ? new BedrockChat({
+          model: "anthropic.claude-v2",
+          region: process.env.BEDROCK_AWS_REGION,
+          credentials: {
+            accessKeyId: process.env.BEDROCK_AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.BEDROCK_AWS_SECRET_ACCESS_KEY!,
+          },
+        })
+      : undefined;
 
   const chain = createConversationalRetrievalChain({
     model: cloudflareModel,

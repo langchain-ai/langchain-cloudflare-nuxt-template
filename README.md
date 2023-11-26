@@ -7,7 +7,11 @@ pulled in by the vectorstore's similarity search, which could occur if only a si
 🚀 **Live version here:** https://langchain-cloudflare-nuxt-template.jacob-ee9.workers.dev/
 
 The base version runs entirely on the Cloudflare WorkersAI stack with a tiny open-source Llama 2-7B model, but you can
-swap in more powerful models such as Anthropic's `claude-2` or OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired. It uses:
+swap in more powerful models such as Anthropic's `claude-2` or OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired.
+
+![](/public/images/langchain-cloudflare-nuxt-demo.mp4)
+
+It uses:
 
 - A chat variant of Llama 2-7B run via the [Cloudflare WorkersAI network](https://developers.cloudflare.com/workers-ai/)
 - A Cloudflare WorkersAI embeddings model
