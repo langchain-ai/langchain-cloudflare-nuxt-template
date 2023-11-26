@@ -9,7 +9,7 @@ pulled in by the vectorstore's similarity search, which could occur if only a si
 The base version runs entirely on the Cloudflare WorkersAI stack with a tiny open-source Llama 2-7B model, but you can
 swap in more powerful models such as Anthropic's `claude-2` or OpenAI's `gpt-3.5-turbo` to improve performance in key places if desired.
 
-![](/public/images/langchain-cloudflare-nuxt-demo.mp4)
+![](/public/images/interaction.png)
 
 It uses:
 
