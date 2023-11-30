@@ -16,13 +16,10 @@ const addNewMessage = (message: Message) => {
 };
 
 const appendToMessage = (chunk: string, index: number) => {
-  if (!messages.value.length || stopReceived.value[index]) {
-    return;
-  }
   let newContent = messages.value[index].content + chunk;
-  if (newContent.includes("STOP")) {
-    newContent = newContent.slice(0, newContent.indexOf("STOP"));
-    stopReceived.value[index] = true;
+  // Hacky fix for WorkersAI duplicating the final token in output
+  if (newContent.endsWith("..")) {
+    newContent = newContent.slice(0, -1);
   }
   messages.value[index].content = newContent;
   scrollHistoryToBottom();
