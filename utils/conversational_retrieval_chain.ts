@@ -1,10 +1,13 @@
-import type { VectorStore } from "langchain/vectorstores/base";
-import type { BaseLanguageModel } from "langchain/base_language";
-import type { Document } from "langchain/document";
+import type { VectorStore } from "@langchain/core/vectorstores";
+import type { BaseLanguageModel } from "@langchain/core/language_models/base";
+import type { Document } from "@langchain/core/documents";
 
-import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
-import { RunnableSequence, RunnableBranch } from "langchain/schema/runnable";
-import { StringOutputParser } from "langchain/schema/output_parser";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
+import { RunnableSequence, RunnableBranch } from "@langchain/core/runnables";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 
 const CONDENSE_QUESTION_SYSTEM_TEMPLATE = `You are an experienced researcher, expert at interpreting and answering questions based on provided sources.
 Your job is to remove references to chat history from incoming questions, rephrasing them as standalone questions.`;

@@ -1,6 +1,6 @@
 name = "langchain-cloudflare-nuxt-template"
 main = "./.output/server/index.mjs"
-compatibility_date = "2023-11-15"
+compatibility_date = "2024-01-10"
 compatibility_flags = [ "nodejs_compat" ]
 
 [[vectorize]]

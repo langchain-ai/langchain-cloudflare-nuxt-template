@@ -1,10 +1,12 @@
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { Document } from "langchain/document";
-import type { VectorStore } from "langchain/vectorstores/base";
+import { Document } from "@langchain/core/documents";
+import type { VectorStore } from "@langchain/core/vectorstores";
 
-import { CloudflareVectorizeStore } from "langchain/vectorstores/cloudflare_vectorize";
-import { CloudflareWorkersAIEmbeddings } from "langchain/embeddings/cloudflare_workersai";
+import {
+  CloudflareVectorizeStore,
+  CloudflareWorkersAIEmbeddings,
+} from "@langchain/cloudflare";
 
 import { BLOG_POST_TEXT } from "~/utils/data/lilian_weng_agents_blog";
 

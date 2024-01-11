@@ -4,7 +4,9 @@ export default defineEventHandler(async (event) => {
   if (!process.env.LANGCHAIN_API_KEY) {
     throw new Error("No LangChain API key set.");
   }
-  const langsmithClient = new Client();
+  const langsmithClient = new Client({
+    webUrl: "https://smith.langchain.com",
+  });
   const body = await readBody(event);
   const runId = body.run_id;
   if (!runId) {

@@ -1,10 +1,12 @@
-import { HumanMessage, AIMessage } from "langchain/schema";
+import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { HttpResponseOutputParser } from "langchain/output_parsers";
 
-import { BedrockChat } from "langchain/chat_models/bedrock/web";
-import { ChatCloudflareWorkersAI } from "langchain/chat_models/cloudflare_workersai";
-import { CloudflareVectorizeStore } from "langchain/vectorstores/cloudflare_vectorize";
-import { CloudflareWorkersAIEmbeddings } from "langchain/embeddings/cloudflare_workersai";
+import { BedrockChat } from "@langchain/community/chat_models/bedrock/web";
+import {
+  ChatCloudflareWorkersAI,
+  CloudflareVectorizeStore,
+  CloudflareWorkersAIEmbeddings,
+} from "@langchain/cloudflare";
 import { createConversationalRetrievalChain } from "~/utils/conversational_retrieval_chain";
 
 const formatChatHistory = (
