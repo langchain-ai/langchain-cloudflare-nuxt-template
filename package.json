@@ -25,7 +25,7 @@
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
     "@aws-sdk/types": "^3.451.0",
-    "@langchain/cloudflare": "0.0.0",
+    "@langchain/cloudflare": "0.0.1",
     "@langchain/community": "^0.0.16",
     "@mdi/font": "^7.3.67",
     "@microsoft/fetch-event-source": "^2.0.1",
